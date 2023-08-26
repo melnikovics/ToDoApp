@@ -91,25 +91,39 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
     );
   }
 
-  @override
-  Widget _buildTaskItem(Task task) {
+// Methode zum Löschen einer Aufgabe
+  void _deleteTask(int index) {
+    setState(() {
+      tasks.removeAt(index);
+    });
+  }
+
+  Widget _buildTaskItem(Task task, int index) {
     return ListTile(
       title: Text(
         task.title,
-        style: TextStyle(
-          color: widget.isDarkMode ? Colors.white : null,
-        ),
+        style: TextStyle(color: widget.isDarkMode ? Colors.white : null),
       ),
-      trailing: Checkbox(
-        value: task.isDone,
-        onChanged: (value) {
-          setState(() {
-            task.isDone = value!;
-          });
-        },
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Checkbox(
+            value: task.isDone,
+            onChanged: (value) {
+              setState(() {
+                task.isDone = value!;
+              });
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.delete,
+                color: widget.isDarkMode ? Colors.white : Colors.black),
+            onPressed: () => _deleteTask(index),
+          )
+        ],
       ),
       onTap: () {
-        _showTaskDialog(task: task);
+        _showTaskDialog(task: task, index: index);
       },
     );
   }
@@ -139,7 +153,7 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
             );
           } else if (index <= _openTasks.length) {
             final task = _openTasks[index - 1];
-            return _buildTaskItem(task);
+            return _buildTaskItem(task, index - 1);
           } else if (index == _openTasks.length + 1) {
             return Padding(
               padding: const EdgeInsets.all(8.0),
@@ -150,7 +164,7 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
             );
           } else {
             final task = _doneTasks[index - _openTasks.length - 2];
-            return _buildTaskItem(task);
+            return _buildTaskItem(task, index - _openTasks.length - 2);
           }
         },
       ),
